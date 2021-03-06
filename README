@@ -1,5 +1,6 @@
 
-
+                       Descrierea programului MiniOS
+		       
 	Tema debuteaza cu functiile de definire a celulelor generice(cu informatia de tip
 void *info), utilizate in implementarea stivelor, cozilor(asteptare si terminare) si
 a listei de memorie. Totodata, avem definit un struct al procesului(de tip proces), 
