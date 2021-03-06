@@ -1,0 +1,74 @@
+BLANARU ANDY-STEFAN
+
+	Tema debuteaza cu functiile de definire a celulelor generice(cu informatia de tip
+void *info), utilizate in implementarea stivelor, cozilor(asteptare si terminare) si
+a listei de memorie. Totodata, avem definit un struct al procesului(de tip proces), 
+reprezentand informatia continuta in celulele din coada si din lista de memorie.
+Ulterior, am scris o functie care imi aloca procesul si toata informatia continuta in el,
+2 functii care imi aloca celulele pe care le introduc in stiva, respectiv in coada. Toate
+acestea sunt urmate de functiile specifice prelucrarii stivelor si cozilor (introducere,
+extragere etc.). 
+	In functia "determinarePID" calculez si returnez cel mai mic PID disponibil. 
+Am folosit aceasta functie in functia de add pentru a putea afla PID-ul pe care il va avea 
+procesul pe care il voi insera deoarece in cazul in care un proces ajunge in coada de finish,
+PID-ul lui devine disponibil.
+	In functia "adaugaMemorie" tratez mai multe cazuri. Spre exemplu , daca lista mea de 
+memorie este goala, atunci o aloc. Daca nu am niciun element, atunci il inserez la inceput.
+Dar daca nu am un al doilea element atunci il inserez la sfarsit, retinand totodata adresa lui
+de inceput , cu alte cuvinte memoria primului proces. Totodata , daca primul block de memorie 
+nu are memoria de start 0 ,atunci verific daca am loc sa inserez un element la inceput.
+Daca nu pot insera la inceput, atunci verific daca am suficient loc sa il inserez intre doua
+elemente , parcurgand lista de memorie. Practic compar dimensiunea procesului care trebuie inserat cu 
+diferenta dintre adresele celor doua procese consecutive + dimensiunea procesului
+(spatiul gol). Altfel, daca am ajuns la sfarsitul block-urilor de memorie, inseamna ca am 
+gasit loc pentru acel proces si il vom insera la sfarsit.
+	Functia "nrElemQ" ma ajuta sa tin tot timpul evidenta numarului de elemente dintr-o 
+coada si sa controlez anumite afisari.
+	Functia "print_waiting" extrage fiecare element din coada de waiting si afiseaza 
+informatii despre fiecare proces. Analog ,la functia "print_finished" pentru coada finished.
+	Functia "introducereQ" imi introduce elementele sortat in coada de asteptare.
+Abordarea este astfel: verific elementul pe care trebuie sa il introduc, cu fiecare element din coada.
+(descrescator dupa prioritate , crescator dupa timp de executie in caz de prioritati egale si crescator 
+dupa PID in caz de prioritate si timp de executie egale). Daca nu i-am gasit pozitia, introduc fiecare 
+element din coada, intr-o coada noua. Cand ii gasesc pozitia, introduc si elementul meu in coada, deci 
+coada ramane sortata. La final parcurg restul cozii, si introduc elementele ramase in coada, si 
+reactualizez coada. Aceasta functie am rescris-o in "add" , dar am folosit-o in functia de "run".
+	In functia "add" verific in primul rand daca adaugarea noului element intrece limita 
+de 3MiB. Daca n-am element in starea de running , adaug elementul in memorie(cu functia adaugaMemorie). 
+Daca am element in starea running aplic acelasi algoritm ca la introducereQ. In ceea ce priveste introducere 
+elementelor in coada de waiting , fac analog ca in functia de introducereQ.
+	In functia "get" , parcurg starea running , coada de asteptatre si coada finished pana 
+ce gasesc PID-ul. Cu valoarea "afisat" tin evidenta daca elementul a fost gasit si afisat cu succes.
+	Functia "remove_memorie" este folosita in functia de "run" in cazul in care o celula
+din coada de waiting si-a terminat timpul de executie. Daca numarul de elemente este 0, atunci 
+realoc coada de waiting si lista de memorie. Altfel, caut elementul in memorie si sar peste el.
+(il elimin).
+	Functia "finish" parcurge coada de asteptare, imi calculeaza timpul total ramas si
+afiseaza timpul total.
+	Functia "pushS" parcurge lista de memorie, imi identifica PID-ul si insereaza la 
+inceputul stivei aflate in celula cu PID-ul cerut o celula care ocupa sizeof(int) si are 
+informatia ceruta.
+	Functia "printStack" parcurge lista de memorie, imi identifica PID-ul si afiseaza
+tot continutul stivei din celula cu PID-ul respectiv.
+	Functia "pop" parcurge lista de memorie, imi identifica PID-ul si elimina de la
+inceputul stivei o celula de sizeof(int) si scade din dimensiunea stive sizeof(int).
+	Functia "run" consta in parcurgerea timpulu dat ca parametru "timp". Incep prin a verifica
+daca starea running este nenula. In acest caz , cat timp variabila "timp" este mai mare decat 0,
+inseamna ca nu am parcurs tot timpul, deci procesele inca mai pot rula(doar daca mai exista in 
+coada de asteptare). Pe urma, iau cazurile urmatoare: 1. Daca cuantum_timp(variabila citita la
+inceputul programului) este mai mare decat cuantum_timp-ul procesului curent(adica cuanta de timp
+ramasa pentru a executa in acel proces), atunci actualizez timpul executat, timpul de executie si
+timpul, si cuantumul de timp al procesului curent devine cuantumul de timp initial. Tot in acest caz,
+verific daca se termina procesul in urma rulatii. 2.Daca timpul este mai mic decat cuantum_timp,
+ma aflu in cazul in care eu din procesul running, pot sa scad doar timpul ramas. Tot aici verific
+daca procesul se termina sau nu. Timpul este mai mare sau egal cu cuantum_timp , atunci din proces
+voi putea sa scad cuantum_timp, si, ca in restul cazurilor, verific daca procesul se termina sau nu.
+Totodata, dupa fiecare caz, adica dupa terminarea unui proces running, verific daca mai am elemente 
+in coada de asteptare. Dacz nu am, ies din "run" si marchez running ca fiind null.
+	In main am citit folosind parametrii liniei de comanda fisierele de intrare si de iesire.
+Citesc de pe primul rand din fisier cuanta de timp. Iau si citesc fiecare linie din fisier cat 
+timp am ce citi din fisierul de intrare . Verific cu ce operatie coincid primele cuvinte de pe
+fiecare inceput de rand ,folosind "strcmp". Cu p iau si citesc fiecare cuvant de pe fiecare rand.
+Fiecare valoare identificata de p iau si o convertesc la tipul intreg ,folosind atoi(p). Dupa care
+apelez functia corespunzatoare fiecarui strcmp.
+
