@@ -1,5 +1,5 @@
 
-                       Descrierea programului MiniOS
+                        Descrierea programului MiniOS
 		       	       
 	Programul debuteaza cu functiile de definire a celulelor generice(cu informatia de tip
 void *info), utilizate in implementarea stivelor, cozilor(asteptare si terminare) si
